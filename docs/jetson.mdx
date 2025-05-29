@@ -1,0 +1,104 @@
+import OneDriveLink from '@site/src/components/DownloadLink';
+import { VerifySHA256, ExtractFile, FlashCMD } from '@site/src/components/FlashCodeBlock'
+import { ProductSelect } from '@site/src/components/JetsonSelect'
+
+<!--
+  The Jetson drop down selection
+  To select the product and JetPack SDK (Jetson Linux) Version
+--->
+
+
+export const productOptions = [
+  { 
+    value: 'j4012s', 
+    label: 'reComputer Super J4012', 
+    jetpacks: ["36.4.3"],
+  },
+  { 
+    value: 'j4011s', 
+    label: 'reComputer Super J4011', 
+    jetpacks: ["36.4.3"] 
+  },
+  { 
+    value: 'j3011s', 
+    label: 'reComputer Super J3011', 
+    jetpacks: ["36.4.3"] 
+  },
+  { 
+    value: 'j3010s', 
+    label: 'reComputer Super J3010', 
+    jetpacks: ["36.4.3"] 
+  },
+]
+
+
+# Flash JetPack
+
+
+Select your product, and JetPack you wish to flash
+
+<!--Mount the Select Components-->
+<ProductSelect options={productOptions} />
+
+
+
+:::note
+
+JetPack with 🚀 support [MAXN super](https://developer.nvidia.com/blog/nvidia-jetpack-6-2-brings-super-mode-to-nvidia-jetson-orin-nano-and-jetson-orin-nx-modules/) configurations
+
+Click [here](/) to view JetPack support for your device
+:::
+
++ Download JetPack
+
+<OneDriveLink />
+
++ (Optional) Verify sha256
+
+<VerifySHA256 />
+
++ Install flash dependencies
+```bash
+sudo apt-get update && \
+sudo apt-get install -y abootimg \
+                        binfmt-support \
+                        binutils \
+                        cpp \
+                        device-tree-compiler \
+                        dosfstools \
+                        lbzip2 \
+                        libxml2-utils \
+                        nfs-kernel-server \
+                        python3-yaml \
+                        qemu-user-static \
+                        sshpass \
+                        udev \
+                        uuid-runtime \
+                        whois \
+                        openssl \
+                        cpio \
+                        rsync \
+                        zstd
+```
+
+Additionally, for Ubuntu 18.04 and below, install `lz4c`
+
+```bash
+sudo apt-get install -y lz4
+```
+
+For Ubuntu 20.04 and above:
+
+```bash
+sudo apt-get install -y lz4
+```
+
++ Extract
+
+<ExtractFile />
+
++ Flash your device ⚡
+
+<FlashCMD />
+
+

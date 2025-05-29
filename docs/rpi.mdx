@@ -1,0 +1,163 @@
+import { KernelSelect } from '@site/src/components/RPiKernelSelect';
+
+
+
+## Work with new kernel (6.6.31+)
+
+Since Raspberry Pi's kernel updates was rather active, versions bumped up very fast. Some people may face the issue that can't use `can0` interface with following errors:
+
+```shell
+sudo dmesg | grep spi
+...
+[   15.543587] mcp251xfd spi0.0 can0: CRC read error at address 0x0010 (length=4, data=80 00 00 00, CRC=0x0000) retrying.
+[   15.543622] mcp251xfd spi0.0 can0: CRC read error at address 0x0080 (length=4, data=80 00 00 00, CRC=0x0000) retrying.
+[   15.543652] mcp251xfd spi0.0 can0: CRC read error at address 0x0070 (length=4, data=80 00 00 00, CRC=0x0000) retrying.
+...
+```
+
+Which could be solved by applying the following patch and build custom kernel module, please note that this will build a out of tree kernel module.
+
+
+### Build Kernel Module
+
++ Check your kernel version. Determine the major and minor version:
+
+```sh
+uname -r
+# e.g 6.12.25+rpt-rpi-2712
+```
+
++ Obtain Raspberry Pi's kernel source.
+
+Select your kernel version
+
+<KernelSelect />
+
+```
+cd linux
+```
+
++ Modify mcp251xfd driver file
+
+```sh
+nano $(pwd)/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
+```
+
+:::tip
+When editing with nano, press `Ctrl` + `W` to enter search mode.
+
+Then, type the symbol you wish to search, in our case would be `mcp251xfd_regmap_crc_read`.
+
+Press `Enter` to locate the symbol.
+:::
+
+Inside function `mcp251xfd_regmap_crc_read`, add following before `goto out` statement (Ignore the `+` symbol).
+
+```diff
+mcp251xfd_regmap_crc_read(void *context,
+                                /* If CRC is now correct, assume
+                                 * flipped data is OK.
+                                 */
+                                 // highlight-next-line
++                               buf_rx->data[0] ^= 0x80;
+                                goto out;
+                        }
+                }
+```
+
+Press `Ctrl`+`O` to Save the file, `Ctrl` + `X` to leave nano editor.
+
++ Install necessary dependencies
+
+```sh
+sudo apt-get update
+sudo apt install -y build-essential \
+                    flex \
+                    raspberrypi-kernel-headers \
+                    libncurses-dev bison \
+                    device-tree-compiler \
+                    can-utils
+```
+
+
++ Build kernel module
+
+```sh
+make -C /lib/modules/$(uname -r)/build M=$(pwd)/drivers/net/can/spi/mcp251xfd modules
+```
+
+If everything goes well, you will get a `mcp251xfd.ko` kernel module under `drivers/net/can/spi/mcp251xfd`:
+
+
+### Compile Device Tree File
+
+```shell
+cpp -nostdinc \
+    -I $(pwd)/include \
+    -undef -x assembler-with-cpp \
+    $(pwd)/arch/arm/boot/dts/overlays/seeed-can-fd-hat-v2-overlay.dts \
+    -o $(pwd)/arch/arm/boot/dts/overlays/seeed-can-fd-hat-v2-overlay.dts.pp
+```
+
+```shell
+dtc -@ -I dts -O dtb \
+    -o $(pwd)/arch/arm/boot/dts/overlays/seeed-can-fd-hat-v2-overlay.dtbo \
+    $(pwd)/arch/arm/boot/dts/overlays/seeed-can-fd-hat-v2-overlay.dts.pp
+```
+
+Copy `.dtbo` to dtoverlay directory
+
+```sh
+sudo cp $(pwd)/arch/arm/boot/dts/overlays/seeed-can-fd-hat-v2-overlay.dtbo /boot/overlays
+```
+
+Apply the device tree overlay.
+
+```bash
+sudo nano /boot/firmware/config.txt
+```
+
+Add following context and save the file.  (Ignore the `+` symbol)
+
+```diff
+[all]
+...
+// highlight-next-line
++ dtoverlay=seeed-can-fd-hat-v2-overlay
+...
+```
+
+:::note
+Use `raspi-config` to config the [SPI](https://www.raspberrypi.com/documentation/computers/configuration.html#spi-nonint), [I2C](https://www.raspberrypi.com/documentation/computers/configuration.html#i2c-nonint) before reboot
+:::
+
+`Reboot` the device, continue to work with kernel: remove original kernel module and load our new out-of-tree kernel module
+
+```sh
+# In case previously loaded the module
+sudo rmmod mcp251xfd
+# Load 'can' related modules
+sudo modprobe can_raw
+sudo modprobe can_dev
+sudo modprobe can
+
+# change directory
+cd linux
+# load custom build kernel module
+sudo insmod $(pwd)/drivers/net/can/spi/mcp251xfd/mcp251xfd.ko
+```
+
+After this, bring up the can0 interface and test the CAN communications. Connect CAN_L with CAN_H, perform loopback test: 
+
+
+```bash
+sudo ip link set can0 type can bitrate 500000 loopback on
+sudo ip link set can0 up
+candump can0
+```
+
+On new terminal, execute
+
+```bash
+cansend can0 123#DEADBEEF
+```
