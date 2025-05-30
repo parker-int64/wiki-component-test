@@ -1,0 +1,37 @@
+[
+    {
+        "product": "j4012s",
+        "l4t": "36.4.3",
+        "mainlink": "https://example.com/j4012s/36.4.3",
+        "filename": "j4012s-36.4.3.img",
+        "foldername": "mfi_xxxx",
+        "sha256": "abc123"
+    },
+    {
+        "product": "j4011s",
+        "l4t": "35.5.0",
+        "mainlink": "https://example.com/j4011s/35.5.5",
+        "mirrorlink": "https://mirror.example.com/j4011s/35.5.5",
+        "filename": "j4011s-35.5.5.img",
+        "foldername": "mfi_xxxx",
+        "sha256": "xyz456"
+    },
+    {
+        "product": "j3011s",
+        "l4t": "36.4.3",
+        "mainlink": "https://example.com/j3011s/36.4.3",
+        "mirrorlink": "https://mirror.example.com/j3011s/36.4.3",
+        "filename": "j3011s-36.4.3.img",
+        "foldername": "mfi_xxxx",
+        "sha256": "def789"
+    },
+    {
+        "product": "j3010s",
+        "l4t": "36.4.3",
+        "mainlink": "https://example.com/j3010s/36.4.3",
+        "mirrorlink": "https://mirror.example.com/j3010s/36.4.3",
+        "filename": "j3010s-36.4.3.img",
+        "foldername": "mfi_xxxx",
+        "sha256": "def789"
+    }
+]

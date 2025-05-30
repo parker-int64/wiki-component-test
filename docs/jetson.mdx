@@ -4,7 +4,7 @@ import { ProductSelect } from '@site/src/components/JetsonSelect'
 
 <!--
   The Jetson drop down selection
-  To select the product and JetPack SDK (Jetson Linux) Version
+  To select the product and Jetson Linux (JetPack SDK) Version
 --->
 
 
@@ -12,30 +12,30 @@ export const productOptions = [
   { 
     value: 'j4012s', 
     label: 'reComputer Super J4012', 
-    jetpacks: ["36.4.3"],
+    l4t: ["36.4.3"],
   },
   { 
     value: 'j4011s', 
     label: 'reComputer Super J4011', 
-    jetpacks: ["36.4.3"] 
+    l4t: ["36.4.3", "35.5.0"] 
   },
   { 
     value: 'j3011s', 
     label: 'reComputer Super J3011', 
-    jetpacks: ["36.4.3"] 
+    l4t: ["36.4.3"] 
   },
   { 
     value: 'j3010s', 
     label: 'reComputer Super J3010', 
-    jetpacks: ["36.4.3"] 
+    l4t: ["36.4.3"] 
   },
 ]
 
 
-# Flash JetPack
+# Flash Jetson Linux
 
 
-Select your product, and JetPack you wish to flash
+Select your product, and Jetson Linux you wish to flash
 
 <!--Mount the Select Components-->
 <ProductSelect options={productOptions} />
@@ -46,10 +46,10 @@ Select your product, and JetPack you wish to flash
 
 JetPack with 🚀 support [MAXN super](https://developer.nvidia.com/blog/nvidia-jetpack-6-2-brings-super-mode-to-nvidia-jetson-orin-nano-and-jetson-orin-nx-modules/) configurations
 
-Click [here](/) to view JetPack support for your device
+Click [here](/) to view Jetson Linux support for your device
 :::
 
-+ Download JetPack
++ Download
 
 <OneDriveLink />
 
@@ -97,7 +97,7 @@ sudo apt-get install -y lz4
 
 <ExtractFile />
 
-+ Flash your device ⚡
++ Flash  ⚡
 
 <FlashCMD />
 
