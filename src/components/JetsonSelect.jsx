@@ -18,7 +18,7 @@
  *  - children: Optional custom JSX content for each Select
  */
 import React, { useEffect } from "react";
-import { Select, ConfigProvider, theme } from "antd";
+import { Select, Image, ConfigProvider, theme } from "antd";
 import { useColorMode } from '@docusaurus/theme-common';
 import { useJetsonStore, useThemeStore } from '@site/src/stores/useJetsonStore';
 
@@ -63,7 +63,9 @@ export const ProductSelect = ({ children, options }) => {
 
     const currentTheme = useThemeStore((state) => state.theme);
 
+    const imgUrl = selectedProduct?.img
 
+    const interfaceUsage = selectedProduct?.interfaceUsage
     return (
         <ConfigProvider
             theme={{
@@ -79,6 +81,10 @@ export const ProductSelect = ({ children, options }) => {
                 padding: '1rem',
                 gap: 16,
             }}>
+                <Image 
+                  width={300}
+                  src={imgUrl}
+                />
                 <Select
                     options={options}
                     value={selectedProduct}
@@ -108,6 +114,7 @@ export const ProductSelect = ({ children, options }) => {
                     {children}
                 </Select>
             </div>
+            <p>Check here for carrier board <a href={interfaceUsage}>interface usage</a>.</p>
         </ConfigProvider>
 
     )
